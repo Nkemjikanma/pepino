@@ -89,14 +89,11 @@ pub fn init_cli() -> Result<Choices, dialoguer::Error> {
     let backend = match backend_index {
         0 => BackendFramework::Axum,
         1 => BackendFramework::ActixWeb,
-        _ => {
-            eprintln!("Backend framework not supported, using default");
-            BackendFramework::Axum
-        }
+        _ => unreachable!("Backend framework not supported, using default"),
     };
 
     let database_index = Select::with_theme(&cli_theme)
-        .with_prompt("Choose datase layer")
+        .with_prompt("Choose database layer")
         .items(&["SQLx", "Diesel"])
         .default(0)
         .interact()?;
@@ -104,10 +101,7 @@ pub fn init_cli() -> Result<Choices, dialoguer::Error> {
     let database = match database_index {
         0 => DatabaseLayer::Sqlx,
         1 => DatabaseLayer::Diesel,
-        _ => {
-            eprintln!("Database layer not supported, using default");
-            DatabaseLayer::Sqlx
-        }
+        _ => unreachable!("Database layer not supported, using default"),
     };
 
     Ok(Choices {
@@ -119,7 +113,7 @@ pub fn init_cli() -> Result<Choices, dialoguer::Error> {
 
 pub fn validate_project_name(input: &str) -> Result<(), &'static str> {
     if input.is_empty() {
-        return Ok(());
+        return Err("project name can't be empty");
     }
 
     let first_char = input.chars().next().unwrap();

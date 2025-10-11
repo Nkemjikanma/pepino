@@ -1,18 +1,14 @@
 mod cli;
 
-use clap::{Parser, Subcommand};
-use console::Style;
-use dialoguer::{Confirm, Input, Select, theme::ColorfulTheme};
-
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let theme = ColorfulTheme {
-        values_style: Style::new().yellow().dim(),
-        ..ColorfulTheme::default()
-    };
-
     println!("Welcome to Viter");
 
-    cli::init_cli();
+    let choices = cli::init_cli()?;
+
+    println!(
+        "Ready to create: {}, using {:?} for backend and {:?} for DB",
+        choices.project_name, choices.backend, choices.database,
+    );
 
     Ok(())
 }

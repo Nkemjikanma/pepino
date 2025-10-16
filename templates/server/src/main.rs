@@ -1,11 +1,16 @@
+mod common;
 mod config;
 mod db;
+mod handlers;
+mod services;
 
 use sqlx::PgPool;
 use tower_http::cors::CorsLayer;
 
+use crate::common::utils::AppState;
 use crate::config::Config;
 use crate::db::create_pool;
+use crate::handlers::public::public_routes;
 use axum::{
     Router,
     http::{
@@ -15,11 +20,6 @@ use axum::{
     middleware,
 };
 use std::net::SocketAddr;
-
-#[derive(Clone, Debug)]
-pub struct AppState {
-    pub pool: PgPool,
-}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -46,14 +46,14 @@ async fn start_server(config: Config) -> Result<(), Box<dyn std::error::Error>> 
 
     tracing::info!("Setting up routes");
 
-    let protected_api = Router::new()
-        .merge(auth_routes())
-        .route_layer(middleware::from_fn_with_state(app_state.clone()));
-    let public_api = Router::new().merge(public_route());
+    // let protected_api = Router::new()
+    //     .merge(auth_routes())
+    //     .route_layer(middleware::from_fn_with_state(app_state.clone()));
+
+    let public_api = Router::new().merge(public_routes());
 
     let app = Router::new()
-        .route("/", get(root))
-        .nest("/api", public_api.merge(protected_api))
+        .nest("/api", public_api)
         .layer(cors)
         .with_state(app_state)
         .into_make_service_with_connect_info::<SocketAddr>();

@@ -28,7 +28,7 @@ impl Config {
                 idle_time: Duration::from_secs(300),
             },
             server: Server {
-                host: std::env::var("PORT").unwrap_or_else(|_| "0.0.0.0".to_string()),
+                host: std::env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string()),
                 port: std::env::var("PORT").unwrap_or_else(|_| "8000".to_string()),
             },
         })
@@ -37,5 +37,5 @@ impl Config {
 
 #[derive(Debug)]
 pub enum ConfigError {
-    MissingEnv(&'static String),
+    MissingEnv(&'static str),
 }

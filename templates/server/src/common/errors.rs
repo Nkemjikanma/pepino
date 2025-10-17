@@ -7,26 +7,24 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum AppError {
-    #[error("Database query error")]
-    ErrorQueryingDatabase,
-    #[error("User already exists")]
-    ExistingUser,
-    #[error("Password hashing failed")]
-    PasswordHashingFailed,
+    #[error("Database error: {0}")]
+    Database(#[from] sqlx::Error),
+
+    #[error("Not found")]
+    NotFound,
 }
 
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         let (status, error_message) = match self {
-            Self::ErrorQueryingDatabase => (
+            Self::Database(error) => (
                 StatusCode::INTERNAL_SERVER_ERROR,
-                "Error while querying database, please try again",
+                format!(
+                    "Something went wrong with  the database operation {:?}",
+                    error
+                ),
             ),
-            Self::ExistingUser => (StatusCode::CONFLICT, "User with email already exists"),
-            Self::PasswordHashingFailed => (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                "Passing hashing failed. Try again",
-            ),
+            Self::NotFound => (StatusCode::NOT_FOUND, "Not found".to_string()),
         };
 
         let body = Json(serde_json::json!({

@@ -2,12 +2,10 @@ mod common;
 mod config;
 mod db;
 mod handlers;
-mod services;
 
 use sqlx::PgPool;
 use tower_http::cors::CorsLayer;
 
-use crate::common::utils::AppState;
 use crate::config::Config;
 use crate::db::create_pool;
 use crate::handlers::public::public_routes;
@@ -21,6 +19,10 @@ use axum::{
 };
 use std::net::SocketAddr;
 
+#[derive(Clone, Debug)]
+pub struct AppState {
+    pub pool: PgPool,
+}
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::fmt::init();

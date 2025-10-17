@@ -1,11 +1,34 @@
-import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { checkHealth, getUsers, createUser } from "./api/users";
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const queryClient = useQueryClient();
 
+
+  // Health Check 
+  const { data: health } = useQuery({
+    queryKey: ['health'],
+    queryFn: checkHealth,
+  })
+
+
+  // list users
+  const { data: users, isLoading } = useQuery({
+    queryKey: ['users'],
+    queryFn: getUsers,
+  })
+
+
+  // create user mutation 
+  const createMutation = useMutation({
+    mutationFn: createUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] })
+    }
+  })
   return (
     <>
       <div>
@@ -18,16 +41,15 @@ function App() {
       </div>
       <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
         <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
+          {health}
         </p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <div className="read-the-docs">
+        {users?.map(user => (
+          <p key={user.id}>{user.name}</p>
+        ))}
+      </div>
     </>
   )
 }

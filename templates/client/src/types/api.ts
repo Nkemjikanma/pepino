@@ -3,14 +3,13 @@
 */
 
 export interface CreateUserRequest {
-	email: string;
-	name: string;
+  email: string;
+  name: string;
 }
 
 export interface User {
-	id: number;
-	email: string;
-	name: string;
-	created_at: DateTime<Utc>;
+  id: number;
+  email: string;
+  name: string;
+  created_at: string;
 }
-

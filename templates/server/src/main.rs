@@ -2,6 +2,7 @@ mod common;
 mod config;
 mod db;
 mod handlers;
+mod models;
 
 use sqlx::PgPool;
 use tower_http::cors::CorsLayer;

@@ -1,5 +1,6 @@
 use crate::AppState;
 use crate::common::{APIResponse, AppResponse, errors::AppError};
+use crate::models::{CreateUserRequest, User};
 use serde::{Deserialize, Serialize};
 
 use axum::{Json, Router, extract::State, routing::get};
@@ -16,6 +17,7 @@ pub struct HealthStatus {
     pub status: String,
     pub database: String,
 }
+
 pub async fn health(State(state): State<AppState>) -> AppResponse<HealthStatus> {
     sqlx::query("SELECT 1").execute(&state.pool).await?;
 
@@ -23,20 +25,6 @@ pub async fn health(State(state): State<AppState>) -> AppResponse<HealthStatus> 
         status: "ok".to_string(),
         database: "connected".to_string(),
     }))
-}
-
-#[derive(Debug, Serialize, Deserialize, FromRow)]
-pub struct User {
-    pub id: i32,
-    pub email: String,
-    pub name: String,
-    pub created_at: chrono::NaiveDateTime,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct CreateUserRequest {
-    pub email: String,
-    pub name: String,
 }
 
 pub async fn list_users(State(state): State<AppState>) -> AppResponse<Vec<User>> {

@@ -15,7 +15,6 @@ use axum::{
         HeaderValue, Method,
         header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE, ORIGIN},
     },
-    middleware,
 };
 use std::net::SocketAddr;
 

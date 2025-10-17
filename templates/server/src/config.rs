@@ -21,7 +21,7 @@ impl Config {
     pub fn default() -> Result<Self, ConfigError> {
         Ok(Self {
             db: DBConfig {
-                url: std::env::var("DATABASE_URL").expect("Database URL must be set in .env"),
+                url: std::env::var("DATABASE_URL").map_err(|_| ConfigError::MissingEnv)?,
                 max_connections: 5,
                 min_connections: 1,
                 connection_timeout: Duration::from_secs(200),
@@ -37,5 +37,5 @@ impl Config {
 
 #[derive(Debug)]
 pub enum ConfigError {
-    MissingEnv(&'static str),
+    MissingEnv,
 }

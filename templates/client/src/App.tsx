@@ -42,7 +42,10 @@ function App() {
       <h1>Vite + React</h1>
       <div className="card">
         <p>
-          {health}
+          Status: {health?.response_data?.status}
+        </p>
+        <p>
+          Database: {health?.response_data?.database}
         </p>
       </div>
       <div className="read-the-docs">

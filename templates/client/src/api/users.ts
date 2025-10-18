@@ -2,7 +2,7 @@ import type { User, CreateUserRequest } from "../types/api";
 const API_BASE = "/api";
 
 export async function checkHealth() {
-  const response = await fetch(`{API_BASE}/health`);
+  const response = await fetch(`${API_BASE}/health`);
 
   if (!response.ok) throw new Error("Health check failed");
 
@@ -15,6 +15,8 @@ export async function getUsers(): Promise<User[]> {
   if (!response.ok) throw new Error("Failed to fetch users");
 
   const data = await response.json();
+
+  console.log(data);
 
   return data.response_data;
 }

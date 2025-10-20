@@ -73,45 +73,58 @@ mod tests {
     use std::fs;
     use tempfile::TempDir;
 
+    // handle the creation and cleanup of temporaryu dirs
+    fn directory_manager<F, R>(f: F) -> R
+    where
+        F: FnOnce(&TempDir) -> R,
+    {
+        let temp_dir = TempDir::new().unwrap();
+        let original_dir = std::env::current_dir().unwrap();
+
+        std::env::set_current_dir(&temp_dir).unwrap();
+
+        let result = f(&temp_dir);
+
+        std::env::set_current_dir(original_dir).unwrap();
+
+        result
+    }
+
     #[test]
     fn test_generate_project_directory() {
-        let new_dir = TempDir::new().unwrap();
-        let project_name = "new_pepino_project";
+        directory_manager(|temp_dir| {
+            let project_name = "new_pepino_project";
 
-        let choices = Choices {
-            project_name: project_name.to_string(),
-            backend: BackendFramework::Axum,
-            database: DatabaseLayer::Sqlx,
-        };
+            let choices = Choices {
+                project_name: project_name.to_string(),
+                backend: BackendFramework::Axum,
+                database: DatabaseLayer::Sqlx,
+            };
 
-        // run in temp directory
-        std::env::set_current_dir(&new_dir).unwrap();
+            let result = generate_template(choices);
 
-        let result = generate_template(choices);
-
-        assert!(result.is_ok());
-        assert!(new_dir.path().join(project_name).exists());
+            assert!(result.is_ok());
+            assert!(temp_dir.path().join(project_name).exists());
+        });
     }
 
     #[test]
     fn test_generate_fails_if_direct_exists() {
-        let new_dir = TempDir::new().unwrap();
-        let project_name = "new_pepino_project_failure";
+        directory_manager(|_temp_dir| {
+            let project_name = "new_pepino_project_failure";
 
-        fs::create_dir(new_dir.path().join(project_name)).unwrap();
+            fs::create_dir(project_name).unwrap();
 
-        let choices = Choices {
-            project_name: project_name.to_string(),
-            backend: BackendFramework::Axum,
-            database: DatabaseLayer::Sqlx,
-        };
+            let choices = Choices {
+                project_name: project_name.to_string(),
+                backend: BackendFramework::Axum,
+                database: DatabaseLayer::Sqlx,
+            };
 
-        // run in temp directory
-        std::env::set_current_dir(&new_dir).unwrap();
-
-        let result = generate_template(choices);
-
-        assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("already exists"));
+            let result = generate_template(choices);
+            // Should fail because directory exists
+            assert!(result.is_err(), "Expected error but got: {:?}", result);
+            assert!(result.unwrap_err().to_string().contains("already exists"));
+        });
     }
 }

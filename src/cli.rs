@@ -96,7 +96,13 @@ pub enum SQLXFlavour {
 pub enum PepinoProcess {
     Create { choices: Choices },
     Dev { path: Option<String> },
-    Build { path: Option<String> },
+    Build(BuildProcess),
+}
+
+#[derive(Debug)]
+pub enum BuildProcess {
+    Frontend { release: bool },
+    Backend { target: Option<String> },
 }
 
 pub fn init_cli() -> Result<Choices, PepinoError> {

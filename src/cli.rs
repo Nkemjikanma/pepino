@@ -93,6 +93,12 @@ pub enum SQLXFlavour {
     SQLite,
 }
 
+pub enum PepinoProcess {
+    Create { choices: Choices },
+    Dev { path: Option<String> },
+    Build { path: Option<String> },
+}
+
 pub fn init_cli() -> Result<Choices, PepinoError> {
     let cli = Cli::parse();
 

@@ -1,5 +1,17 @@
+# Build artifacts
 /target
+**/target
 
+# Dependencies
+**/node_modules
+
+# Environment files
 .env
 *.env
 !.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files

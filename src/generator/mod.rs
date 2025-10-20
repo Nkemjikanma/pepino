@@ -94,7 +94,7 @@ mod tests {
     }
 
     #[test]
-    fn test_generate_fails_if_direct_esist() {
+    fn test_generate_fails_if_direct_exists() {
         let new_dir = TempDir::new().unwrap();
         let project_name = "new_pepino_project_failure";
 

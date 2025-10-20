@@ -1,7 +1,8 @@
 mod cli;
+mod generator;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("Welcome to Viter");
+    println!("Welcome to Pepino");
 
     let choices = cli::init_cli()?;
 
@@ -10,5 +11,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         choices.project_name, choices.backend, choices.database,
     );
 
+    generator::generate_template(choices)?;
     Ok(())
 }

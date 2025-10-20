@@ -3,8 +3,10 @@ use console::Style;
 use dialoguer::{Confirm, Input, Select, theme::ColorfulTheme};
 
 #[derive(Parser, Debug)]
-#[command(name = "viter")]
-#[command(about = "A Rust + Vite fullstack project scaffolder", long_about = None)]
+#[command(name = "pepino")]
+#[command(author = "Nkemjika")]
+#[command(version = "0.1.0")]
+#[command(about = "🥒 A fullstack Rust + Vite project scaffolder", long_about = None)]
 pub struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -13,6 +15,7 @@ pub struct Cli {
 #[derive(Debug, Subcommand)]
 pub enum Commands {
     /// Create new project
+    #[command(name = "new")]
     New { name: Option<String> },
 }
 

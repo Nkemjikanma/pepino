@@ -62,8 +62,6 @@ cargo install typeshare-cli
 cargo install cargo-watch
 ```
 
-### **Available Commands**
-
 ## Available Commands
 
 Once your project is generated, use these `just` commands:

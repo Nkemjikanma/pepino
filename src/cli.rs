@@ -8,21 +8,49 @@ use dialoguer::{Input, Select, theme::ColorfulTheme};
 #[command(version = "0.1.0")]
 #[command(about = "🥒 A fullstack Rust + Vite project scaffolder + Build System", long_about = None)]
 pub struct Cli {
+    /// Global flag available to all subcommands
+    // #[arg(short, long, global = true)]
+    // pub verbose: bool,
+
     #[command(subcommand)]
-    command: Commands,
+    pub command: Commands,
 }
 
 #[derive(Debug, Subcommand)]
 pub enum Commands {
     /// Create new project
     #[command(name = "new")]
-    New { name: Option<String> },
+    New {
+        #[arg(help = "Optional project name")]
+        name: Option<String>,
+    },
 
+    /// Start development servers
     #[command(name = "dev")]
-    Dev { project_path: Option<String> }, // the directory of the project to run?
+    Dev {
+        #[arg(long, help = "Path to project")]
+        project_path: Option<String>,
+    }, // the directory of the project to run?
 
     #[command(name = "build")]
-    Build { project_path: Option<String> }, // the directory of the project to build?
+    Build {
+        #[command(subcommand)]
+        target: BuildTarget,
+    }, // the directory of the project to build?
+}
+
+#[derive(Subcommand, Debug)]
+pub enum BuildTarget {
+    /// Build the frontend
+    Frontend {
+        #[arg(long, help = "Minify output")]
+        release: bool,
+    },
+    /// Build the backend
+    Backend {
+        #[arg(long, help = "Target architecture")]
+        target: Option<String>,
+    },
 }
 
 #[derive(Debug)]
@@ -48,7 +76,13 @@ pub enum DatabaseLayer {
 pub enum PepinoProcess {
     Create { choices: Choices },
     Dev { path: Option<String> },
-    Build { path: Option<String> },
+    Build(BuildProcess),
+}
+
+#[derive(Debug)]
+pub enum BuildProcess {
+    Frontend { release: bool },
+    Backend { target: Option<String> },
 }
 
 pub fn init_cli() -> Result<PepinoProcess, dialoguer::Error> {
@@ -75,12 +109,16 @@ pub fn init_cli() -> Result<PepinoProcess, dialoguer::Error> {
             }
             Ok(PepinoProcess::Dev { path: project_path })
         }
-        Commands::Build { project_path } => {
-            if let Some(ref path) = project_path {
-                println!("building project at {}", path);
+        Commands::Build { target } => match target {
+            BuildTarget::Frontend { release } => {
+                println!("Building frontend (release={})", release);
+                Ok(PepinoProcess::Build(BuildProcess::Frontend { release }))
             }
-            Ok(PepinoProcess::Build { path: project_path })
-        }
+            BuildTarget::Backend { target } => {
+                println!("Building backend for {:?}", target);
+                Ok(PepinoProcess::Build(BuildProcess::Backend { target }))
+            }
+        },
     }
 }
 

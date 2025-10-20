@@ -52,9 +52,9 @@ just dev-client
 Install these tools before starting:
 
 ### Required
-- **Rust** (1.75+) - [Install](https://rustup.rs/)
-- **Node.js** (20+) - [Install](https://nodejs.org/)
-- **PostgreSQL** (14+) - [Install](https://www.postgresql.org/download/)
+- **Rust** (1.75+)  
+- **Node.js** (20+) 
+- **PostgreSQL** (14+) 
 
 ```bash
 # Install just

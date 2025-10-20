@@ -1,6 +1,6 @@
 use clap::{Parser, Subcommand};
 use console::Style;
-use dialoguer::{Confirm, Input, Select, theme::ColorfulTheme};
+use dialoguer::{Input, Select, theme::ColorfulTheme};
 
 #[derive(Parser, Debug)]
 #[command(name = "pepino")]

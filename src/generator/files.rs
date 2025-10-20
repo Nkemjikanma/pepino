@@ -42,6 +42,6 @@ version = "0.1.0"
         assert!(!result_cargo.contains("{{PROJECT_NAME}}"));
 
         assert!(result_package_json.contains("myapp-client"));
-        assert!(result_package_json.contains("{{PROJECT_NAME}}"));
+        assert!(!result_package_json.contains("{{PROJECT_NAME}}"));
     }
 }

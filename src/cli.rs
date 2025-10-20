@@ -215,7 +215,6 @@ pub fn create_pepino_project(
                 .interact()?;
 
             let flavour = match flavour_index {
-<<<<<<< HEAD
                 0 => {
                     let docker_compose = Confirm::with_theme(&cli_theme)
                         .with_prompt("Include docker-compose for database?")
@@ -234,12 +233,6 @@ pub fn create_pepino_project(
                         }
                     }
                 }
-<<<<<<< HEAD
-                1 => &SQLXFlavour::SQLite,
-=======
-=======
-                0 => SQLXFlavour::PostgreSQL,
->>>>>>> b95214f (feat: add support for sqlx sqlite (#4))
                 1 => SQLXFlavour::SQLite,
 >>>>>>> 68d0164 (feat: add support for sqlx sqlite (#4))
                 _ => unreachable!("SQLx flavour not supported, using default"),

@@ -305,6 +305,7 @@ dependencies = [
  "console",
  "dialoguer",
  "rust-embed",
+ "tempfile",
  "thiserror",
 ]
 

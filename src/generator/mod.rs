@@ -65,3 +65,53 @@ pub fn generate_template(choices: Choices) -> Result<(), Box<dyn std::error::Err
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::cli::{BackendFramework, Choices, DatabaseLayer};
+    use std::fs;
+    use tempfile::TempDir;
+
+    #[test]
+    fn test_generate_project_directory() {
+        let new_dir = TempDir::new().unwrap();
+        let project_name = "new_pepino_project";
+
+        let choices = Choices {
+            project_name: project_name.to_string(),
+            backend: BackendFramework::Axum,
+            database: DatabaseLayer::Sqlx,
+        };
+
+        // run in temp directory
+        std::env::set_current_dir(&new_dir).unwrap();
+
+        let result = generate_template(choices);
+
+        assert!(result.is_ok());
+        assert!(new_dir.path().join(project_name).exists());
+    }
+
+    #[test]
+    fn test_generate_fails_if_direct_esist() {
+        let new_dir = TempDir::new().unwrap();
+        let project_name = "new_pepino_project_failure";
+
+        fs::create_dir(new_dir.path().join(project_name)).unwrap();
+
+        let choices = Choices {
+            project_name: project_name.to_string(),
+            backend: BackendFramework::Axum,
+            database: DatabaseLayer::Sqlx,
+        };
+
+        // run in temp directory
+        std::env::set_current_dir(&new_dir).unwrap();
+
+        let result = generate_template(choices);
+
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("already exists"));
+    }
+}

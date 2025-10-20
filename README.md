@@ -62,6 +62,73 @@ cargo install typeshare-cli
 cargo install cargo-watch
 ```
 
+## What You Get
+Pepino generates a complete, production-ready fullstack project:
+
+### Project Structure
+\```
+my-app/
+├── Cargo.toml              # Workspace configuration
+├── .env.example            # Environment template
+├── .gitignore             
+├── justfile                # Task runner commands
+├── README.md               # Project documentation
+│
+├── server/                 # Rust backend (Axum + SQLx)
+│   ├── Cargo.toml
+│   ├── migrations/
+│   │   └── *_create_users.sql
+│   └── src/
+│       ├── main.rs         # Server entry point
+│       ├── config.rs       # Configuration management
+│       ├── db.rs           # Database connection pool
+│       ├── common/         # Shared utilities
+│       │   ├── api.rs      # API response types
+│       │   ├── errors.rs   # Error handling
+│       │   └── mod.rs
+│       ├── handlers/       # API endpoints
+│       │   ├── public.rs   # Public routes (users, health)
+│       │   └── mod.rs
+│       └── models/         # Data models
+│           ├── user.rs     # User model with typeshare
+│           └── mod.rs
+│
+└── client/                 # React frontend (Vite + TypeScript)
+    ├── package.json
+    ├── vite.config.ts      # Proxy config for API
+    ├── tsconfig.json
+    ├── index.html
+    └── src/
+        ├── main.tsx        # App entry
+        ├── App.tsx         # Main component
+        ├── api/
+        │   └── users.ts    # API client
+        └── types/
+            └── api.ts      # Generated TypeScript types
+\```
+
+### Out-of-the-Box Features
+
+**Backend:**
+- ✅ Health check endpoint (`GET /api/health`)
+- ✅ User CRUD endpoints (`GET/POST /api/users`)
+- ✅ PostgreSQL connection pooling
+- ✅ Structured error handling
+- ✅ CORS configuration
+- ✅ Request logging with `tracing`
+
+**Frontend:**
+- ✅ React 19 with TypeScript
+- ✅ TanStack Query for data fetching
+- ✅ Type-safe API client
+- ✅ Example components with real API calls
+- ✅ Hot module replacement
+
+**Type Safety:**
+- ✅ Rust structs automatically generate TypeScript types
+- ✅ End-to-end type safety from database to UI
+- ✅ `just generate-types` command for updates
+
 ## Available Commands
 
 Once your project is generated, use these `just` commands:

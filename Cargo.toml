@@ -13,7 +13,6 @@ include = [
     "Cargo.toml",
     "README.md",
     "templates/**/*",
-    "!templates/Cargo.toml",  
     "!templates/target/**",          
     "!templates/server/target/**",
     "!templates/client/node_modules/**",

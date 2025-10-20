@@ -22,6 +22,14 @@ pub fn generate_template(choices: Choices) -> Result<(), Box<dyn std::error::Err
     // iterating through all embeds
     println!("📝 Generating files...");
     for file_path in templates::Templates::iter() {
+        let file_path_str = file_path.as_ref();
+
+        // remove template extensions
+        let target_file_name = if file_path_str.ends_with(".template") {
+            file_path_str.strip_suffix(".template").unwrap()
+        } else {
+            file_path_str
+        };
         // get file content
         let file_content_as_bytes = templates::Templates::get(&file_path)
             .ok_or_else(|| format!("Failed to get embedded file: {}", file_path))?;
@@ -33,7 +41,7 @@ pub fn generate_template(choices: Choices) -> Result<(), Box<dyn std::error::Err
         };
 
         // target path
-        let target_path = project_root.join(file_path.as_ref());
+        let target_path = project_root.join(target_file_name);
 
         // create parent path if needed
         if let Some(parent) = target_path.parent() {

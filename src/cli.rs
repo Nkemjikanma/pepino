@@ -73,6 +73,7 @@ pub enum DatabaseLayer {
     // Diesel,
 }
 
+
 #[derive(Debug)]
 pub enum PepinoProcess {
     Create { choices: Choices },
@@ -220,7 +221,7 @@ pub fn create_pepino_project(
                         }
                     }
                 }
-                1 => SQLXFlavour::SQLite,
+                1 => &SQLXFlavour::SQLite,
                 _ => unreachable!("SQLx flavour not supported, using default"),
             };
             DatabaseLayer::Sqlx(flavour)

@@ -20,21 +20,29 @@ cargo install pepino
 
 # 2. Create a new project
 pepino new my-app
-cd my-app
+cd my-app/server
+
+# Edit .env with your database URL
+cp .env.example .env
 
 # 3. Set up database
-createdb my_app_dev
-cp .env.example .env
-# Edit .env with your database URL
+sqlx database create
 
 # 4. Run migrations
+cd ..
 just migrate
 
 # 5. Generate TypeScript types
 just generate-types
 
-# 6. Start development (in separate terminals)
+# 6. Start server development (in separate terminals)
 just dev-server
+
+
+# 6. Start client development (in separate terminals)
+cd client
+npm install 
+cd .. 
 just dev-client
 
 # 7. Open http://localhost:5173

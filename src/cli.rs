@@ -6,7 +6,7 @@ use dialoguer::{Input, Select, theme::ColorfulTheme};
 #[command(name = "pepino")]
 #[command(author = "Nkemjika")]
 #[command(version = "0.1.0")]
-#[command(about = "🥒 A fullstack Rust + Vite project scaffolder", long_about = None)]
+#[command(about = "🥒 A fullstack Rust + Vite project scaffolder + Build System", long_about = None)]
 pub struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -17,6 +17,12 @@ pub enum Commands {
     /// Create new project
     #[command(name = "new")]
     New { name: Option<String> },
+
+    #[command(name = "dev")]
+    Dev { project_path: Option<String> }, // the directory of the project to run?
+
+    #[command(name = "build")]
+    Build { project_path: Option<String> }, // the directory of the project to build?
 }
 
 #[derive(Debug)]
@@ -38,14 +44,20 @@ pub enum DatabaseLayer {
     Diesel,
 }
 
-pub fn init_cli() -> Result<Choices, dialoguer::Error> {
+#[derive(Debug)]
+pub enum PepinoProcess {
+    Create { choices: Choices },
+    Dev { path: Option<String> },
+    Build { path: Option<String> },
+}
+
+pub fn init_cli() -> Result<PepinoProcess, dialoguer::Error> {
     let cli = Cli::parse();
 
     let cli_theme = ColorfulTheme {
         values_style: Style::new().yellow().dim(),
         ..ColorfulTheme::default()
     };
-
     // if !Confirm::with_theme(&cli_theme)
     //     .with_prompt("Do you want to continue?")
     //     .interact()?
@@ -53,10 +65,29 @@ pub fn init_cli() -> Result<Choices, dialoguer::Error> {
     //     return Ok(None);
     // }
 
-    let cli_name = match cli.command {
-        Commands::New { name } => name,
-    };
+    match cli.command {
+        Commands::New { name } => Ok(PepinoProcess::Create {
+            choices: { create_pepino_project(name, &cli_theme)? },
+        }),
+        Commands::Dev { project_path } => {
+            if let Some(ref path) = project_path {
+                println!("starting servers on {}", path);
+            }
+            Ok(PepinoProcess::Dev { path: project_path })
+        }
+        Commands::Build { project_path } => {
+            if let Some(ref path) = project_path {
+                println!("building project at {}", path);
+            }
+            Ok(PepinoProcess::Build { path: project_path })
+        }
+    }
+}
 
+pub fn create_pepino_project(
+    cli_name: Option<String>,
+    cli_theme: &ColorfulTheme,
+) -> Result<Choices, dialoguer::Error> {
     let validated_name = if let Some(name) = cli_name {
         match validate_project_name(&name) {
             Ok(_) => {
@@ -77,15 +108,16 @@ pub fn init_cli() -> Result<Choices, dialoguer::Error> {
         println!("✅ Project name: {}", name);
         name
     } else {
-        Input::<String>::with_theme(&cli_theme)
+        Input::<String>::with_theme(cli_theme)
             .with_prompt("Enter project name")
             .validate_with(|input: &String| validate_project_name(&input))
             .interact_text()?
     };
 
-    let backend_index = Select::with_theme(&cli_theme)
+    let backends_list = ["Axum"];
+    let backend_index = Select::with_theme(cli_theme)
         .with_prompt("Choose backend framework")
-        .items(&["Axum"])
+        .items(&backends_list)
         .default(0)
         .interact()?;
 
@@ -95,9 +127,10 @@ pub fn init_cli() -> Result<Choices, dialoguer::Error> {
         _ => unreachable!("Backend framework not supported, using default"),
     };
 
-    let database_index = Select::with_theme(&cli_theme)
+    let database_list = ["SQLx"];
+    let database_index = Select::with_theme(cli_theme)
         .with_prompt("Choose database layer")
-        .items(&["SQLx"])
+        .items(&database_list)
         .default(0)
         .interact()?;
 
@@ -129,7 +162,9 @@ pub fn validate_project_name(input: &str) -> Result<(), &'static str> {
 
     for ch in input.chars().skip(1) {
         if !ch.is_ascii_lowercase() && !ch.is_ascii_digit() && ch != '-' {
-            return Err("project name can contain only lowercase letters, numbers and ");
+            return Err(
+                "project name can contain only lowercase letters, numbers, and hyphens ('-')",
+            );
         }
     }
     Ok(())

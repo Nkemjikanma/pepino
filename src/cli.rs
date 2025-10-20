@@ -85,25 +85,25 @@ pub fn init_cli() -> Result<Choices, dialoguer::Error> {
 
     let backend_index = Select::with_theme(&cli_theme)
         .with_prompt("Choose backend framework")
-        .items(&["Axum", "Actix-web"])
+        .items(&["Axum"])
         .default(0)
         .interact()?;
 
     let backend = match backend_index {
         0 => BackendFramework::Axum,
-        1 => BackendFramework::ActixWeb,
+        // 1 => BackendFramework::ActixWeb,
         _ => unreachable!("Backend framework not supported, using default"),
     };
 
     let database_index = Select::with_theme(&cli_theme)
         .with_prompt("Choose database layer")
-        .items(&["SQLx", "Diesel"])
+        .items(&["SQLx"])
         .default(0)
         .interact()?;
 
     let database = match database_index {
         0 => DatabaseLayer::Sqlx,
-        1 => DatabaseLayer::Diesel,
+        // 1 => DatabaseLayer::Diesel,
         _ => unreachable!("Database layer not supported, using default"),
     };
 

@@ -12,6 +12,28 @@ Pepino generates production-ready fullstack projects with:
 
 **Stop configuring, start building.**
 
+## Prerequisites
+Install these tools before starting:
+
+### Required
+- **Rust** (1.75+)  
+- **Node.js** (20+) 
+- **PostgreSQL** (14+) 
+
+```bash
+# Install just
+cargo install just
+
+# Install sqlx-cli
+cargo install sqlx-cli --no-default-features --features postgres
+
+# Install typeshare-cli
+cargo install typeshare-cli
+
+# Install cargo-watch (optional, for hot reload)
+cargo install cargo-watch
+```
+
 ## Quick Start
 
 ```bash
@@ -48,33 +70,11 @@ just dev-client
 # 7. Open http://localhost:5173
 ```
 
-## Prerequisites
-Install these tools before starting:
-
-### Required
-- **Rust** (1.75+)  
-- **Node.js** (20+) 
-- **PostgreSQL** (14+) 
-
-```bash
-# Install just
-cargo install just
-
-# Install sqlx-cli
-cargo install sqlx-cli --no-default-features --features postgres
-
-# Install typeshare-cli
-cargo install typeshare-cli
-
-# Install cargo-watch (optional, for hot reload)
-cargo install cargo-watch
-```
-
 ## What You Get
 Pepino generates a complete, production-ready fullstack project:
 
 ### Project Structure
-\```
+```
 my-app/
 ├── Cargo.toml              # Workspace configuration
 ├── .env.example            # Environment template
@@ -113,7 +113,7 @@ my-app/
         │   └── users.ts    # API client
         └── types/
             └── api.ts      # Generated TypeScript types
-\```
+```
 
 ### Out-of-the-Box Features
 

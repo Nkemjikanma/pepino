@@ -1,0 +1,43 @@
+# Default recipe - show available commands
+default: 
+	@just --list
+
+
+# install dependencies 
+install: 
+	cd server && cargo build 
+	cd client && npm install
+
+# Run databse migration 
+migrate: 
+	cd server && sqlx migrate run
+
+
+# Generate TS types from Rust 
+generate-types: 
+	typeshare ./server/src --lang=typescript --output-file=./client/src/types/api.ts
+
+
+# start dev servers - run in seperate terminals
+# How do I make them run in seperate terminals? 
+dev-server: 
+	cd server && cargo watch -x run 
+
+
+dev-client: 
+	cd client && npm run dev
+
+
+# build for prod
+build: 
+	cd client && npm run build 
+	cd server && cargo build --release
+
+
+# clean build artifacts 
+clean: 
+	rm -rf server/target client/dist client/node_modules
+
+# run server tests 
+test: 
+	cd server && cargo test

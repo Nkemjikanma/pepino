@@ -1,0 +1,2 @@
+# SQLx with Postgres features
+sqlx = { version = "0.8.6", features = ["runtime-tokio", "postgres", "tls-native-tls", "tls-rustls-ring-webpki", "chrono", "uuid", "ipnetwork"] }

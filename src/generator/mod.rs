@@ -104,6 +104,8 @@ pub fn generate_template(choices: Choices) -> Result<(), Box<dyn std::error::Err
             continue;
         } else if file_path_str == ".env.example" {
             project_root.join(file_path_str)
+        } else if file_path_str == "main.rs" {
+            project_root.join("server/src").join(file_path_str)
         } else {
             project_root.join("server").join(file_path_str)
         };
@@ -116,18 +118,18 @@ pub fn generate_template(choices: Choices) -> Result<(), Box<dyn std::error::Err
     }
 
     // TODO - merged_cargo()
-    let workspace_cargo = std::str::from_utf8(
-        templates::BaseTemplates::get("Cargo.toml.template")
-            .ok_or("Missing base Cargo.toml")?
-            .data
-            .as_ref(),
-    )?
-    .to_string();
-
-    let workspace_cargo_root = project_root.join("Cargo.toml");
-    if let Some(parent) = workspace_cargo_root.parent() {
-        files::create_directory(parent)?;
-    }
+    // let workspace_cargo = std::str::from_utf8(
+    //     templates::BaseTemplates::get("Cargo.toml.template")
+    //         .ok_or("Missing base Cargo.toml")?
+    //         .data
+    //         .as_ref(),
+    // )?
+    // .to_string();
+    //
+    // let workspace_cargo_root = project_root.join("Cargo.toml");
+    // if let Some(parent) = workspace_cargo_root.parent() {
+    //     files::create_directory(parent)?;
+    // }
 
     let server_base = std::str::from_utf8(
         templates::ServerTemplates::get("Cargo.base.toml")

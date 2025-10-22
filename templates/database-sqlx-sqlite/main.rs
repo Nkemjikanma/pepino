@@ -4,7 +4,7 @@ mod db;
 mod handlers;
 mod models;
 
-use sqlx::PgPool;
+use sqlx::{Row, Sqlite, SqlitePool, migrate::MigrateDatabase};
 use tower_http::cors::CorsLayer;
 
 use crate::config::Config;
@@ -17,11 +17,12 @@ use axum::{
         header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE, ORIGIN},
     },
 };
+use sqlx::sqlite::SqliteConnectOptions;
 use std::net::SocketAddr;
 
 #[derive(Clone, Debug)]
 pub struct AppState {
-    pub pool: PgPool,
+    pub pool: SqlitePool,
 }
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -39,12 +40,30 @@ async fn start_server(config: Config) -> Result<(), Box<dyn std::error::Error>> 
     tracing::info!("Initializing DB connection");
 
     let pool = create_pool(config.db).await?;
+
+    let crate_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
+    let migrations = std::path::Path::new(&crate_dir).join("./migrations");
+
+    let migration_results = sqlx::migrate::Migrator::new(migrations)
+        .await
+        .unwrap()
+        .run(&pool)
+        .await;
+
+    match migration_results {
+        Ok(_) => println!("Migration success"),
+        Err(error) => {
+            panic!("error: {}", error);
+        }
+    }
     let app_state = AppState { pool };
+
+    println!("migration: {:?}", migration_results);
 
     let cors = CorsLayer::new()
         .allow_origin("*".parse::<HeaderValue>().unwrap())
         .allow_methods([Method::GET, Method::POST])
-        allow_headers([AUTHORIZATION, ACCEPT, CONTENT_TYPE, ORIGIN]);
+        .allow_headers([AUTHORIZATION, ACCEPT, CONTENT_TYPE, ORIGIN]);
 
     tracing::info!("Setting up routes");
 

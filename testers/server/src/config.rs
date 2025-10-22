@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-struct DBConfig {
+pub struct DBConfig {
     pub url: String,
     pub max_connections: u32,
     pub min_connections: u32,

@@ -1,24 +1,16 @@
-
 # Pepino 🥒
 
 > A fullstack scaffolder for modern Rust + TypeScript web applications
 
-Pepino generates production-ready fullstack projects with:
-- 🦀 **Rust backend** (Axum + SQLx)
-- ⚡ **Vite frontend** (React + TanStack Query)
-- 🔄 **Type sharing** (Rust types → TypeScript)
-- 🗄️ **Database ready** (PostgreSQL + migrations)
-- 🛠️ **Dev tools** (hot reload, justfile commands)
+Scaffold fullstack Rust + TypeScript apps in one command.
+
+Axum backend • React frontend • Shared types • SQLite or Postgres
+
 
 **Stop configuring, start building.**
 
 ## Prerequisites
 Install these tools before starting:
-
-### Required
-- **Rust** (1.75+)  
-- **Node.js** (20+) 
-- **PostgreSQL** (14+) 
 
 ```bash
 # Install just
@@ -34,111 +26,28 @@ cargo install typeshare-cli
 cargo install cargo-watch
 ```
 
-## Quick Start
+## Install
 
 ```bash
-# 1. Install pepino
 cargo install pepino
-
-# 2. Create a new project
 pepino new my-app
-cd my-app/server
-
-# Edit .env with your database URL
+cd my-app
 cp .env.example .env
-
-# 3. Set up database
-sqlx database create
-
-# 4. Run migrations
-cd ..
-just migrate
-
-# 5. Generate TypeScript types
-just generate-types
-
-# 6. Start server development (in separate terminals)
-just dev-server
-
-
-# 6. Start client development (in separate terminals)
-cd client
-npm install 
-cd .. 
-just dev-client
-
-# 7. Open http://localhost:5173
+just dev-server  # Terminal 1
+just dev-client  # Terminal 2
 ```
 
 ## What You Get
-Pepino generates a complete, production-ready fullstack project:
+Pepino generates a complete, production-ready fullstack project
 
-### Project Structure
-```
-my-app/
-├── Cargo.toml              # Workspace configuration
-├── .env.example            # Environment template
-├── .gitignore             
-├── justfile                # Task runner commands
-├── README.md               # Project documentation
-│
-├── server/                 # Rust backend (Axum + SQLx)
-│   ├── Cargo.toml
-│   ├── migrations/
-│   │   └── *_create_users.sql
-│   └── src/
-│       ├── main.rs         # Server entry point
-│       ├── config.rs       # Configuration management
-│       ├── db.rs           # Database connection pool
-│       ├── common/         # Shared utilities
-│       │   ├── api.rs      # API response types
-│       │   ├── errors.rs   # Error handling
-│       │   └── mod.rs
-│       ├── handlers/       # API endpoints
-│       │   ├── public.rs   # Public routes (users, health)
-│       │   └── mod.rs
-│       └── models/         # Data models
-│           ├── user.rs     # User model with typeshare
-│           └── mod.rs
-│
-└── client/                 # React frontend (Vite + TypeScript)
-    ├── package.json
-    ├── vite.config.ts      # Proxy config for API
-    ├── tsconfig.json
-    ├── index.html
-    └── src/
-        ├── main.tsx        # App entry
-        ├── App.tsx         # Main component
-        ├── api/
-        │   └── users.ts    # API client
-        └── types/
-            └── api.ts      # Generated TypeScript types
-```
-
-### Out-of-the-Box Features
-
-**Backend:**
-- ✅ Health check endpoint (`GET /api/health`)
-- ✅ User CRUD endpoints (`GET/POST /api/users`)
-- ✅ PostgreSQL connection pooling
-- ✅ Structured error handling
-- ✅ CORS configuration
-- ✅ Request logging with `tracing`
-
-**Frontend:**
-- ✅ React 19 with TypeScript
-- ✅ TanStack Query for data fetching
-- ✅ Type-safe API client
-- ✅ Example components with real API calls
-- ✅ Hot module replacement
-
-**Type Safety:**
-- ✅ Rust structs automatically generate TypeScript types
-- ✅ End-to-end type safety from database to UI
-- ✅ `just generate-types` command for updates
+- Backend: Axum + SQLx with example CRUD endpoints
+- Frontend: React + Vite + TanStack Query
+- Type Safety: Rust types auto-generate TypeScript interfaces
+- Database: Choose PostgreSQL or SQLite with migrations included
+- Dev Tools: Hot reload, justfile commands, structured error handling
+- Working Example: Full user management flow out of the box
 
 ## Available Commands
-
 Once your project is generated, use these `just` commands:
 
 ```bash
@@ -150,42 +59,13 @@ just build          # Build for production
 just clean          # Clean build artifacts
 just test           # Run tests
 ```
-
-## Current Features
-
-- ✅ Axum + SQLx backend generation
-- ✅ React + Vite frontend generation
-- ✅ TypeScript type generation from Rust
-- ✅ PostgreSQL database setup
-- ✅ Example CRUD implementation
-- ✅ Development hot reload
-
 ## Roadmap
 - ⏳ Actix-web backend option
 - ⏳ Diesel ORM option
-- ⏳ SQLite support
 - ⏳ Authentication scaffolding
 - ⏳ Docker configuration
 - ⏳ CI/CD templates
 
-Want a feature? [Open an issue](https://github.com/nkemjikanma/pepino/issues)!
-
-
 ## Contributing
-
-Contributions are welcome! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Submit a pull request
-
 ## License
-
-MIT License - see [LICENSE](LICENSE) for details
-
-## Author
-
-Created by [Nkemjika](https://github.com/nkemjikanma)
-
----
-
-**Found this useful? Give it a ⭐ on GitHub!**
+MIT • [Nkemjika](https://github.com/nkemjikanma)

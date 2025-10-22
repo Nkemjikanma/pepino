@@ -1,6 +1,6 @@
 [package]
 name = "pepino"
-version = "0.1.3"
+version = "0.2.0"
 edition = "2024"
 authors = ["Nkemjika <nkemjikanma@proton.me>"]
 description = "A fullstack Rust + Vite project scaffolder"
@@ -19,6 +19,7 @@ include = [
 ]
 
 [dependencies]
+camino = "1.2.1"
 clap = { version = "4.5.48", features = ["derive"] }
 console = "0.16.1"
 dialoguer = "0.12.0"

@@ -1,0 +1,3 @@
+
+# SQLx with SQLite features
+sqlx = { version = "0.8.6", features = ["runtime-tokio", "sqlite", "chrono", "uuid"] }

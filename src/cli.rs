@@ -1,3 +1,4 @@
+use super::error::PepinoError;
 use clap::{Parser, Subcommand};
 use console::Style;
 use dialoguer::{Input, Select, theme::ColorfulTheme};
@@ -68,8 +69,8 @@ pub enum BackendFramework {
 
 #[derive(Debug)]
 pub enum DatabaseLayer {
-    Sqlx,
-    Diesel,
+    Sqlx(SQLXFlavour),
+    // Diesel,
 }
 
 #[derive(Debug)]
@@ -86,6 +87,12 @@ pub enum BuildProcess {
 }
 
 pub fn init_cli() -> Result<PepinoProcess, dialoguer::Error> {
+pub enum SQLXFlavour {
+    PostgreSQL,
+    SQLite,
+}
+
+pub fn init_cli() -> Result<Choices, PepinoError> {
     let cli = Cli::parse();
 
     let cli_theme = ColorfulTheme {
@@ -168,12 +175,40 @@ pub fn create_pepino_project(
     let database_list = ["SQLx"];
     let database_index = Select::with_theme(cli_theme)
         .with_prompt("Choose database layer")
-        .items(&database_list)
+        .items(&["SQLx (async, supports Postgres/SQLite)"])
         .default(0)
         .interact()?;
 
     let database = match database_index {
-        0 => DatabaseLayer::Sqlx,
+        0 => {
+            let arrow = Style::new().cyan().bold();
+            let sub_style = Style::new().dim();
+            // Informative message  and indentation
+            println!(
+                "\n{} {}",
+                arrow.apply_to("→"),
+                sub_style.apply_to("SQLx selected — choose which flavour to use:")
+            );
+
+            let sqlx_flavours = ["PostgreSQL", "SQLite"];
+            let flavour_index = Select::with_theme(&cli_theme)
+                .with_prompt("Choose SQLx flavour")
+                .items(
+                    &sqlx_flavours
+                        .iter()
+                        .map(|f| format!("   {}", f))
+                        .collect::<Vec<_>>(),
+                )
+                .default(0)
+                .interact()?;
+
+            let flavour = match flavour_index {
+                0 => SQLXFlavour::PostgreSQL,
+                1 => SQLXFlavour::SQLite,
+                _ => unreachable!("SQLx flavour not supported, using default"),
+            };
+            DatabaseLayer::Sqlx(flavour)
+        }
         // 1 => DatabaseLayer::Diesel,
         _ => unreachable!("Database layer not supported, using default"),
     };

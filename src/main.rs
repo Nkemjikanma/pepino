@@ -1,7 +1,8 @@
 mod cli;
+mod error;
 mod generator;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), error::PepinoError> {
     println!("Welcome to Pepino");
 
     let init_choices = cli::init_cli()?;

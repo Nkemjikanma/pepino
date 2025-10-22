@@ -64,7 +64,7 @@ pub struct Choices {
 #[derive(Debug)]
 pub enum BackendFramework {
     Axum,
-    ActixWeb,
+    // ActixWeb,
 }
 
 #[derive(Debug)]
@@ -86,20 +86,13 @@ pub enum BuildProcess {
     Backend { target: Option<String> },
 }
 
-pub fn init_cli() -> Result<PepinoProcess, dialoguer::Error> {
+#[derive(Debug)]
 pub enum SQLXFlavour {
     PostgreSQL,
     SQLite,
 }
 
-pub fn init_cli() -> Result<Choices, PepinoError> {
-pub enum PepinoProcess {
-    Create { choices: Choices },
-    Dev { path: Option<String> },
-    Build { path: Option<String> },
-}
-
-pub fn init_cli() -> Result<PepinoProcess, dialoguer::Error> {
+pub fn init_cli() -> Result<PepinoProcess, PepinoError> {
     let cli = Cli::parse();
 
     let cli_theme = ColorfulTheme {
@@ -197,7 +190,7 @@ pub fn create_pepino_project(
             );
 
             let sqlx_flavours = ["PostgreSQL", "SQLite"];
-            let flavour_index = Select::with_theme(&cli_theme)
+            let flavour_index = Select::with_theme(cli_theme)
                 .with_prompt("Choose SQLx flavour")
                 .items(
                     &sqlx_flavours

@@ -1,5 +1,4 @@
 use camino::Utf8Path;
-use std::collections::HashMap;
 use std::fs;
 
 // create directory and parent directories

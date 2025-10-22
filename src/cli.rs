@@ -1,3 +1,4 @@
+use super::error::PepinoError;
 use clap::{Parser, Subcommand};
 use console::Style;
 use dialoguer::{Input, Select, theme::ColorfulTheme};
@@ -44,7 +45,7 @@ pub enum SQLXFlavour {
     SQLite,
 }
 
-pub fn init_cli() -> Result<Choices, dialoguer::Error> {
+pub fn init_cli() -> Result<Choices, PepinoError> {
     let cli = Cli::parse();
 
     let cli_theme = ColorfulTheme {

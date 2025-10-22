@@ -1,12 +1,12 @@
 pub mod files;
 pub mod templates;
 
-use crate::cli::{BackendFramework, Choices, DatabaseLayer, SQLXFlavour};
+use crate::error::PepinoError;
+
+use crate::cli::{Choices, DatabaseLayer, SQLXFlavour};
 use camino::{Utf8Path, Utf8PathBuf};
 // use std::fs;
-use std::borrow::Cow;
 use std::collections::HashMap;
-use std::path::Path;
 
 pub enum SQLXTemplates {
     Postgres(templates::PostgresTemplates),
@@ -14,14 +14,6 @@ pub enum SQLXTemplates {
 }
 
 impl SQLXTemplates {
-    // TODO : Figure out WHY?!
-    // pub fn iter(&self) -> Box<dyn Iterator<Item = std::borrow::Cow<'static, str>>> {
-    //     match self {
-    //         SQLXTemplates::Postgres(_) => templates::PostgresTemplates::iter(),
-    //         SQLXTemplates::Sqlite(_) => templates::SqliteTemplates::iter(),
-    //     }
-    // }
-
     pub fn get(&self, path: &str) -> Option<rust_embed::EmbeddedFile> {
         match self {
             SQLXTemplates::Postgres(_) => templates::PostgresTemplates::get(path),
@@ -30,7 +22,7 @@ impl SQLXTemplates {
     }
 }
 
-pub fn generate_template(choices: Choices) -> Result<(), Box<dyn std::error::Error>> {
+pub fn generate_template(choices: Choices) -> Result<(), PepinoError> {
     // extract project details
     let project_name = choices.project_name;
 
@@ -45,7 +37,7 @@ pub fn generate_template(choices: Choices) -> Result<(), Box<dyn std::error::Err
 
     // Validate project name
     if project_root.exists() {
-        return Err("Directory already exists. Please enter a different name".into());
+        return Err(PepinoError::DirectoryExists(project_name));
     }
 
     // Create project root directory
@@ -62,7 +54,7 @@ pub fn generate_template(choices: Choices) -> Result<(), Box<dyn std::error::Err
         let target_path = project_root.join(file_path_str);
 
         let content = templates::BaseTemplates::get(file_path_str)
-            .ok_or_else(|| format!("Failed to get embedded file: {}", file_path_str))?;
+            .ok_or_else(|| PepinoError::MissingTemplate(file_path_str.to_string()))?;
 
         files_to_write.insert(target_path, content);
     }
@@ -72,8 +64,8 @@ pub fn generate_template(choices: Choices) -> Result<(), Box<dyn std::error::Err
 
         let target_path = project_root.join("client").join(file_path_str);
 
-        let content = templates::ClientTemplates::get(&file_path.as_ref())
-            .ok_or_else(|| format!("Failed to get Client embed for file: {}", file_path_str))?;
+        let content = templates::ClientTemplates::get(&file_path_str)
+            .ok_or_else(|| PepinoError::MissingTemplate(file_path_str.to_string()))?;
 
         files_to_write.insert(target_path, content);
     }
@@ -82,10 +74,9 @@ pub fn generate_template(choices: Choices) -> Result<(), Box<dyn std::error::Err
         let file_path_str = file_path.as_ref();
 
         let target_path = project_root.join("server").join(file_path_str);
-        println!("{}", target_path);
 
         let content = templates::ServerTemplates::get(file_path_str)
-            .ok_or_else(|| format!("Failed to get server file: {}", file_path_str))?;
+            .ok_or_else(|| PepinoError::MissingTemplate(file_path_str.to_string()))?;
 
         files_to_write.insert(target_path, content);
     }
@@ -112,28 +103,14 @@ pub fn generate_template(choices: Choices) -> Result<(), Box<dyn std::error::Err
 
         let content = database_flavour
             .get(file_path_str)
-            .ok_or_else(|| format!("Failed to get database file: {}", file_path_str))?;
+            .ok_or_else(|| PepinoError::MissingTemplate(file_path_str.to_string()))?;
 
         files_to_write.insert(target_path, content);
     }
 
-    // TODO - merged_cargo()
-    // let workspace_cargo = std::str::from_utf8(
-    //     templates::BaseTemplates::get("Cargo.toml.template")
-    //         .ok_or("Missing base Cargo.toml")?
-    //         .data
-    //         .as_ref(),
-    // )?
-    // .to_string();
-    //
-    // let workspace_cargo_root = project_root.join("Cargo.toml");
-    // if let Some(parent) = workspace_cargo_root.parent() {
-    //     files::create_directory(parent)?;
-    // }
-
     let server_base = std::str::from_utf8(
         templates::ServerTemplates::get("Cargo.base.toml")
-            .ok_or("Missing server Cargo base")?
+            .ok_or_else(|| PepinoError::MissingTemplate("Cargo.base.toml".to_string()))?
             .data
             .as_ref(),
     )?
@@ -141,7 +118,7 @@ pub fn generate_template(choices: Choices) -> Result<(), Box<dyn std::error::Err
 
     let server_fragment = std::str::from_utf8(
         templates::ServerTemplates::get("Cargo.fragment.toml")
-            .ok_or("MIssing server Cargo fragment")?
+            .ok_or_else(|| PepinoError::MissingTemplate("Server Cargo.fragment.toml".to_string()))?
             .data
             .as_ref(),
     )?
@@ -150,14 +127,20 @@ pub fn generate_template(choices: Choices) -> Result<(), Box<dyn std::error::Err
     let db_fragment = match database_flavour {
         SQLXTemplates::Postgres(_) => std::str::from_utf8(
             templates::PostgresTemplates::get("Cargo.fragment.toml")
-                .ok_or("Missing Postgres cargo fragment")?
+                .ok_or_else(|| {
+                    PepinoError::MissingTemplate(
+                        "Database-Postgres Cargo.fragment.toml".to_string(),
+                    )
+                })?
                 .data
                 .as_ref(),
         )?
         .to_string(),
         SQLXTemplates::Sqlite(_) => std::str::from_utf8(
             templates::SqliteTemplates::get("Cargo.fragment.toml")
-                .ok_or("Missing sqlite Cargo fragment")?
+                .ok_or_else(|| {
+                    PepinoError::MissingTemplate("Database-Sqlite Cargo.fragment.toml".to_string())
+                })?
                 .data
                 .as_ref(),
         )?
@@ -202,36 +185,6 @@ pub fn generate_template(choices: Choices) -> Result<(), Box<dyn std::error::Err
         files::write_file(&final_path, &file_content)?;
     }
 
-    // for file_path in templates::Templates::iter() {
-    //     let file_path_str = file_path.as_ref();
-    //
-    //     // remove template extensions
-    //     let target_file_name = if file_path_str.ends_with(".template") {
-    //         file_path_str.strip_suffix(".template").unwrap()
-    //     } else {
-    //         file_path_str
-    //     };
-    //     // get file content
-    //     let file_content_as_bytes = templates::Templates::get(&file_path)
-    //         .ok_or_else(|| format!("Failed to get embedded file: {}", file_path))?;
-    //
-    //     // convert bytes to string for text files
-    //     let file_content = match std::str::from_utf8(file_content_as_bytes.data.as_ref()) {
-    //         Ok(text) => files::replace_variable(text, &project_name).into_bytes(),
-    //         Err(_) => file_content_as_bytes.data.to_vec(),
-    //     };
-    //
-    //     // target path
-    //     let target_path = project_root.join(target_file_name);
-    //
-    //     // create parent path if needed
-    //     if let Some(parent) = target_path.parent() {
-    //         files::create_directory(parent)?;
-    //     }
-    //
-    //     files::write_file(&target_path, file_content.as_ref())
-    //         .map_err(|e| format!("Failed to write file {}: {}", target_path.display(), e))?;
-    // }
     println!("✨ Finalizing project...");
 
     println!("\n✅ Project '{}' created successfully!", project_name);

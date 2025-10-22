@@ -21,7 +21,6 @@ pub struct Cli {
 pub enum Commands {
     /// Create new project
     #[command(name = "new")]
-<<<<<<< HEAD
     New {
         #[arg(help = "Optional project name")]
         name: Option<String>,
@@ -53,15 +52,6 @@ pub enum BuildTarget {
         #[arg(long, help = "Target architecture")]
         target: Option<String>,
     },
-=======
-    New { name: Option<String> },
-
-    #[command(name = "dev")]
-    Dev { project_path: Option<String> }, // the directory of the project to run?
-
-    #[command(name = "build")]
-    Build { project_path: Option<String> }, // the directory of the project to build?
->>>>>>> ace75e8 (refactor: add dev and build commands to cli)
 }
 
 #[derive(Debug)]
@@ -133,7 +123,6 @@ pub fn init_cli() -> Result<PepinoProcess, dialoguer::Error> {
             }
             Ok(PepinoProcess::Dev { path: project_path })
         }
-<<<<<<< HEAD
         Commands::Build { target } => match target {
             BuildTarget::Frontend { release } => {
                 println!("Building frontend (release={})", release);
@@ -144,14 +133,6 @@ pub fn init_cli() -> Result<PepinoProcess, dialoguer::Error> {
                 Ok(PepinoProcess::Build(BuildProcess::Backend { target }))
             }
         },
-=======
-        Commands::Build { project_path } => {
-            if let Some(ref path) = project_path {
-                println!("building project at {}", path);
-            }
-            Ok(PepinoProcess::Build { path: project_path })
-        }
->>>>>>> ace75e8 (refactor: add dev and build commands to cli)
     }
 }
 
@@ -198,10 +179,6 @@ pub fn create_pepino_project(
         _ => unreachable!("Backend framework not supported, using default"),
     };
 
-<<<<<<< HEAD
-    let database_list = ["SQLx"];
-=======
->>>>>>> ace75e8 (refactor: add dev and build commands to cli)
     let database_index = Select::with_theme(cli_theme)
         .with_prompt("Choose database layer")
         .items(&["SQLx (async, supports Postgres/SQLite)"])

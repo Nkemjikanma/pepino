@@ -116,9 +116,22 @@ pub fn generate_template(choices: Choices) -> Result<(), Box<dyn std::error::Err
     }
 
     // TODO - merged_cargo()
-    let base_cargo = std::str::from_utf8(
+    let workspace_cargo = std::str::from_utf8(
         templates::BaseTemplates::get("Cargo.toml.template")
             .ok_or("Missing base Cargo.toml")?
+            .data
+            .as_ref(),
+    )?
+    .to_string();
+
+    let workspace_cargo_root = project_root.join("Cargo.toml");
+    if let Some(parent) = workspace_cargo_root.parent() {
+        files::create_directory(parent)?;
+    }
+
+    let server_base = std::str::from_utf8(
+        templates::ServerTemplates::get("Cargo.base.toml")
+            .ok_or("Missing server Cargo base")?
             .data
             .as_ref(),
     )?
@@ -149,20 +162,24 @@ pub fn generate_template(choices: Choices) -> Result<(), Box<dyn std::error::Err
         .to_string(),
     };
 
-    let merged_cargo = files::merged_cargo_files(&base_cargo, &server_fragment, &db_fragment);
+    let merged_cargo = files::merged_cargo_files(&server_base, &server_fragment, &db_fragment);
 
-    let cargo_path = project_root.join("server/Cargo.toml");
+    let server_cargo_path = project_root.join("server/Cargo.toml");
 
-    if let Some(parent) = cargo_path.parent() {
+    if let Some(parent) = server_cargo_path.parent() {
         files::create_directory(parent)?;
     }
 
     let cargo_with_vars = files::replace_variable(&merged_cargo, &project_name);
-    files::write_file(&cargo_path, cargo_with_vars.as_bytes())?;
+    files::write_file(&server_cargo_path, cargo_with_vars.as_bytes())?;
 
     for (path, content) in files_to_write {
         let path_str = path.as_str();
 
+        // Do not write Cargo.fragment.toml to template
+        if path_str.contains(".fragment.toml") || path_str.contains(".base.toml") {
+            continue;
+        }
         let final_path = if path_str.ends_with(".template") {
             Utf8PathBuf::from(path_str.strip_suffix(".template").unwrap())
         } else {

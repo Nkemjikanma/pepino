@@ -93,7 +93,7 @@ pub enum SQLXFlavour {
     SQLite,
 }
 
-pub fn init_cli() -> Result<PepinoProcess, PepinoError> {
+pub fn init_cli() -> Result<Choices, PepinoError> {
     let cli = Cli::parse();
 
     let cli_theme = ColorfulTheme {

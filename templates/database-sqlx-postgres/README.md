@@ -6,10 +6,11 @@
    cp .env.example .env
    > Edit .env with your database credentials
 
-   # 1. Start PostgreSQL in Docker
+   # 1. Start PostgreSQL in Docker - if docker-compose is present
    just db-up
 
    # 2. Run migrations
+   > If docker compose is not install, set up postgres db
    just migrate
 
    ###### Install dependencies

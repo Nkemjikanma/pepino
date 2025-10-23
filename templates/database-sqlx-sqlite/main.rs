@@ -4,7 +4,7 @@ mod db;
 mod handlers;
 mod models;
 
-use sqlx::{Row, Sqlite, SqlitePool, migrate::MigrateDatabase};
+use sqlx::SqlitePool;
 use tower_http::cors::CorsLayer;
 
 use crate::config::Config;
@@ -17,7 +17,6 @@ use axum::{
         header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE, ORIGIN},
     },
 };
-use sqlx::sqlite::SqliteConnectOptions;
 use std::net::SocketAddr;
 
 #[derive(Clone, Debug)]
@@ -79,9 +78,24 @@ async fn start_server(config: Config) -> Result<(), Box<dyn std::error::Error>> 
         .with_state(app_state)
         .into_make_service_with_connect_info::<SocketAddr>();
 
-    let server_address = format!("{}:{}", config.server.host, config.server.port);
-    let listener = tokio::net::TcpListener::bind(&server_address).await?;
+    let host = config.server.host;
+    let mut port: u16 = config.server.port.parse::<u16>().expect("invalid number");
+    let server_address = format!("{}:{:?}", host, port);
 
+    let listener = loop {
+        match tokio::net::TcpListener::bind(&server_address).await {
+            Ok(listener) => {
+                println!("✅ Listening on http://{}", server_address);
+                break listener;
+            }
+            Err(e) if e.kind() == std::io::ErrorKind::AddrInUse => {
+                port += 1;
+                println!("Port {} in use, trying {:?}", config.server.port, port);
+                continue;
+            }
+            Err(_e) => (),
+        }
+    };
     tracing::info!("Server has started");
 
     axum::serve(listener, app).await?;

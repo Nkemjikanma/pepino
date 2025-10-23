@@ -1,43 +1,69 @@
 # Default recipe - show available commands
-default: 
+default:
 	@just --list
 
+# Start PostgreSQL in Docker
+db-up:
+	@echo "🐘 Starting PostgreSQL..."
+	cd server && docker compose up -d
+	@echo "⏳ Waiting for database to be ready..."
+	@sleep 3
+	@echo "✅ PostgreSQL is ready!"
 
-# install dependencies 
-install: 
-	cd server && cargo build 
+# Stop PostgreSQL
+db-down:
+	@echo "🛑 Stopping PostgreSQL..."
+	docker-compose down
+	@echo "✅ PostgreSQL stopped"
+
+# install dependencies
+install:
+	@echo "📦 Installing server dependencies..."
+	cd server && cargo build
+	@echo "📦 Installing client dependencies..."
 	cd client && npm install
+	@echo "✅ Dependencies installed!"
 
-# Run databse migration 
-migrate: 
+# Create database if it doesn't exist and run migrations
+migrate:
+	@echo "📝 Creating database (if needed)..."
+	cd server && sqlx database create || true
+	@echo "📝 Running migrations..."
 	cd server && sqlx migrate run
+	@echo "✅ Migrations complete!"
 
 
-# Generate TS types from Rust 
-generate-types: 
+# Generate TS types from Rust
+generate-types:
 	typeshare ./server/src --lang=typescript --output-file=./client/src/types/api.ts
 
 
 # start dev servers - run in seperate terminals
-# How do I make them run in seperate terminals? 
-dev-server: 
-	cd server && cargo watch -x run 
+# How do I make them run in seperate terminals?
+dev-server:
+	@echo "🦀 Starting Rust backend..."
+	cd server && cargo watch -x run
 
 
-dev-client: 
+dev-client:
+	@echo "⚡ Starting Vite frontend..."
 	cd client && npm run dev
 
 
 # build for prod
-build: 
-	cd client && npm run build 
+build:
+	@echo "🏗️  Building for production..."
+	cd client && npm run build
 	cd server && cargo build --release
+	@echo "✅ Production build complete!"
 
 
-# clean build artifacts 
-clean: 
+# clean build artifacts
+clean:
+	@echo "🧹 Cleaning build artifacts..."
 	rm -rf server/target client/dist client/node_modules
+	@echo "✅ Cleanup complete!"
 
-# run server tests 
-test: 
+# run server tests
+test:
 	cd server && cargo test

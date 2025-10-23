@@ -60,8 +60,24 @@ async fn start_server(config: Config) -> Result<(), Box<dyn std::error::Error>> 
         .with_state(app_state)
         .into_make_service_with_connect_info::<SocketAddr>();
 
-    let server_address = format!("{}:{}", config.server.host, config.server.port);
-    let listener = tokio::net::TcpListener::bind(&server_address).await?;
+    let host = config.server.host;
+    let mut port = config.server.port;
+    let server_address = format!("{}:{}", host, port);
+
+    let listener = loop {
+        match tokio::net::TcpListener::bind(&server_address).await {
+            Ok(listener) => {
+                println!("✅ Listening on http://{}", server_address);
+                break listener;
+            }
+            Err(e) if e.kind() == std::io::ErrorKind::AddrInUse => {
+                println!("Port {} in use, trying {}", config.server.port, port + 1);
+                port += 1;
+                continue;
+            }
+            Err(e) => return Err(e),
+        }
+    };
 
     tracing::info!("Server has started");
 

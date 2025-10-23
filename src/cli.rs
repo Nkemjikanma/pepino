@@ -1,7 +1,7 @@
 use super::error::PepinoError;
 use clap::{Parser, Subcommand};
 use console::Style;
-use dialoguer::{Input, Select, theme::ColorfulTheme};
+use dialoguer::{Confirm, Input, Select, theme::ColorfulTheme};
 
 #[derive(Parser, Debug)]
 #[command(name = "pepino")]
@@ -41,7 +41,7 @@ pub enum DatabaseLayer {
 
 #[derive(Debug)]
 pub enum SQLXFlavour {
-    PostgreSQL,
+    PostgreSQL { docker_compose: bool },
     SQLite,
 }
 
@@ -132,7 +132,24 @@ pub fn init_cli() -> Result<Choices, PepinoError> {
                 .interact()?;
 
             let flavour = match flavour_index {
-                0 => SQLXFlavour::PostgreSQL,
+                0 => {
+                    let docker_compose = Confirm::with_theme(&cli_theme)
+                        .with_prompt("Include docker-compose for database?")
+                        .default(true)
+                        .show_default(false)
+                        .wait_for_newline(true)
+                        .interact()?;
+
+                    if docker_compose {
+                        SQLXFlavour::PostgreSQL {
+                            docker_compose: true,
+                        }
+                    } else {
+                        SQLXFlavour::PostgreSQL {
+                            docker_compose: false,
+                        }
+                    }
+                }
                 1 => SQLXFlavour::SQLite,
                 _ => unreachable!("SQLx flavour not supported, using default"),
             };

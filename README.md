@@ -26,17 +26,6 @@ cargo install typeshare-cli
 cargo install cargo-watch
 ```
 
-## Install
-
-```bash
-cargo install pepino
-pepino new my-app
-cd my-app
-cp .env.example .env
-just dev-server  # Terminal 1
-just dev-client  # Terminal 2
-```
-
 ## What You Get
 Pepino generates a complete, production-ready fullstack project
 
@@ -51,6 +40,10 @@ Pepino generates a complete, production-ready fullstack project
 Once your project is generated, use these `just` commands:
 
 ```bash
+# Database (Docker)
+just db-up           # Start PostgreSQL
+just db-down         # Stop PostgreSQL
+just install         # install server and vite packages
 just dev-server      # Start Rust backend with hot reload
 just dev-client      # Start Vite dev server
 just migrate         # Run database migrations

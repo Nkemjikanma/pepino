@@ -26,10 +26,13 @@ pub fn generate_template(choices: Choices) -> Result<(), PepinoError> {
     // extract project details
     let project_name = choices.project_name;
 
-    let database_flavour = match choices.database {
+    let (database_flavour, include_docker_compose) = match choices.database {
         DatabaseLayer::Sqlx(flavour) => match flavour {
-            SQLXFlavour::PostgreSQL => SQLXTemplates::Postgres(templates::PostgresTemplates),
-            SQLXFlavour::SQLite => SQLXTemplates::Sqlite(templates::SqliteTemplates),
+            SQLXFlavour::PostgreSQL { docker_compose } => (
+                SQLXTemplates::Postgres(templates::PostgresTemplates),
+                docker_compose,
+            ),
+            SQLXFlavour::SQLite => (SQLXTemplates::Sqlite(templates::SqliteTemplates), false),
         },
     };
 
@@ -100,6 +103,10 @@ pub fn generate_template(choices: Choices) -> Result<(), PepinoError> {
         } else {
             project_root.join("server").join(file_path_str)
         };
+
+        if file_path_str == "docker-compose.yml" && !include_docker_compose {
+            continue;
+        }
 
         let content = database_flavour
             .get(file_path_str)
@@ -188,14 +195,6 @@ pub fn generate_template(choices: Choices) -> Result<(), PepinoError> {
     println!("✨ Finalizing project...");
 
     println!("\n✅ Project '{}' created successfully!", project_name);
-    println!("\nNext steps:");
-    println!("  cd {}", project_name);
-    println!("  cp .env.example .env");
-    println!("  # Edit .env with your database credentials");
-    println!("  just migrate");
-    println!("  just generate-types");
-    println!("  just dev-server  # In one terminal");
-    println!("  just dev-client  # In another terminal");
 
     Ok(())
 }

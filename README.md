@@ -2,8 +2,6 @@
 
 > A fullstack scaffolder for modern Rust + TypeScript web applications
 
-Scaffold fullstack Rust + TypeScript apps in one command.
-
 Axum backend • React frontend • Shared types • SQLite or Postgres
 
 

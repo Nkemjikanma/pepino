@@ -195,14 +195,6 @@ pub fn generate_template(choices: Choices) -> Result<(), PepinoError> {
     println!("✨ Finalizing project...");
 
     println!("\n✅ Project '{}' created successfully!", project_name);
-    println!("\nNext steps:");
-    println!("  cd {}", project_name);
-    println!("  cp .env.example .env");
-    println!("  # Edit .env with your database credentials");
-    println!("  just migrate");
-    println!("  just generate-types");
-    println!("  just dev-server  # In one terminal");
-    println!("  just dev-client  # In another terminal");
 
     Ok(())
 }

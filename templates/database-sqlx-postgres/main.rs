@@ -61,8 +61,8 @@ async fn start_server(config: Config) -> Result<(), Box<dyn std::error::Error>> 
         .into_make_service_with_connect_info::<SocketAddr>();
 
     let host = config.server.host;
-    let mut port = config.server.port;
-    let server_address = format!("{}:{}", host, port);
+    let mut port: u16 = config.server.port.parse::<u16>().expect("invalid number");
+    let server_address = format!("{}:{:?}", host, port);
 
     let listener = loop {
         match tokio::net::TcpListener::bind(&server_address).await {
@@ -71,11 +71,11 @@ async fn start_server(config: Config) -> Result<(), Box<dyn std::error::Error>> 
                 break listener;
             }
             Err(e) if e.kind() == std::io::ErrorKind::AddrInUse => {
-                println!("Port {} in use, trying {}", config.server.port, port + 1);
                 port += 1;
+                println!("Port {} in use, trying {:?}", config.server.port, port);
                 continue;
             }
-            Err(e) => return Err(e),
+            Err(_e) => (),
         }
     };
 

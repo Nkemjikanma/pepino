@@ -1,11 +1,10 @@
 use crate::AppState;
-use crate::common::{APIResponse, AppResponse, errors::AppError};
+use crate::common::{APIResponse, AppResponse};
 use crate::models::{CreateUserRequest, User};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use axum::{Json, Router, extract::State, routing::get};
 
-use sqlx::FromRow;
 pub fn public_routes() -> Router<AppState> {
     Router::new()
         .route("/health", get(health))

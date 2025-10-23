@@ -1,15 +1,15 @@
 -- Add migration script here
 -- Create users table
+-- +migrate Up
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     email TEXT NOT NULL UNIQUE,
     name TEXT NOT NULL,
-    created_at TEXT NOT NULL DEFAULT (datetime ('now'))
+    created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP)
 );
 
--- Insert sample data
-INSERT INTO
-    users (email, name)
+INSERT INTO users (email, name)
 VALUES
     ('alice@example.com', 'Alice'),
     ('bob@example.com', 'Bob');
+

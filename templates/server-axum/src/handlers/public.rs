@@ -41,7 +41,13 @@ pub async fn create_user(
     Json(request): Json<CreateUserRequest>,
 ) -> AppResponse<User> {
     tracing::info!("Creating new user");
-    let user = sqlx::query_as::<_, User>("INSERT INTO users (email, name, created_at) VALUES ($1, $2, NOW()) RETURNING id, email, name, created_at").bind(&request.email).bind(&request.name).fetch_one(&state.pool).await?;
+    let user = sqlx::query_as::<_, User>(
+        "INSERT INTO users (email, name) VALUES ($1, $2) RETURNING id, email, name, created_at",
+    )
+    .bind(&request.email)
+    .bind(&request.name)
+    .fetch_one(&state.pool)
+    .await?;
 
     Ok(APIResponse::success(user))
 }

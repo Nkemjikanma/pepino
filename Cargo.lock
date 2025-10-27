@@ -306,7 +306,6 @@ checksum = "a4895175b425cb1f87721b59f0f286c2092bd4af812243672510e1ac53e2e0ad"
 [[package]]
 name = "pepino"
 version = "0.4.1"
->>>>>>> cdbbe86 (feat: add support for sqlx sqlite (#4))
 dependencies = [
  "camino",
  "clap",

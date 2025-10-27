@@ -93,18 +93,6 @@ pub enum SQLXFlavour {
     SQLite,
 }
 
-pub enum PepinoProcess {
-    Create { choices: Choices },
-    Dev { path: Option<String> },
-    Build(BuildProcess),
-}
-
-#[derive(Debug)]
-pub enum BuildProcess {
-    Frontend { release: bool },
-    Backend { target: Option<String> },
-}
-
 pub fn init_cli() -> Result<PepinoProcess, PepinoError> {
     let cli = Cli::parse();
 
@@ -234,7 +222,6 @@ pub fn create_pepino_project(
                     }
                 }
                 1 => SQLXFlavour::SQLite,
->>>>>>> 68d0164 (feat: add support for sqlx sqlite (#4))
                 _ => unreachable!("SQLx flavour not supported, using default"),
             };
             DatabaseLayer::Sqlx(flavour)

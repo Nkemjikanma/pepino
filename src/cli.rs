@@ -216,7 +216,7 @@ pub fn create_pepino_project(
 
             let flavour = match flavour_index {
                 0 => {
-                    let docker_compose = Confirm::with_theme(&cli_theme)
+                    let docker_compose = Confirm::with_theme(cli_theme)
                         .with_prompt("Include docker-compose for database?")
                         .default(true)
                         .show_default(false)

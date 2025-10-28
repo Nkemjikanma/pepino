@@ -1,11 +1,8 @@
-pub mod files;
-pub mod templates;
+pub mod utils;
 
-use crate::error::PepinoError;
-
-use crate::cli::{Choices, DatabaseLayer, SQLXFlavour};
+use crate::utils::{templates, files};
+use orchestra::{errors::PepinoError, models::{Choices, DatabaseLayer, SQLXFlavour}};
 use camino::{Utf8Path, Utf8PathBuf};
-// use std::fs;
 use std::collections::HashMap;
 
 pub enum SQLXTemplates {

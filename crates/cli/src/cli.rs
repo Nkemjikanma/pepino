@@ -1,4 +1,6 @@
-use super::error::PepinoError;
+// use super::error::PepinoError;
+
+use orchestra::{errors::PepinoError, models::{PepinoProcess, Choices, BackendFramework, SQLXFlavour, DatabaseLayer, BuildProcess}};
 use clap::{Parser, Subcommand};
 use console::Style;
 use dialoguer::{Confirm, Input, Select, theme::ColorfulTheme};
@@ -52,45 +54,6 @@ pub enum BuildTarget {
         #[arg(long, help = "Target architecture")]
         target: Option<String>,
     },
-}
-
-#[derive(Debug)]
-pub struct Choices {
-    pub project_name: String,
-    pub backend: BackendFramework,
-    pub database: DatabaseLayer,
-}
-
-#[derive(Debug)]
-pub enum BackendFramework {
-    Axum,
-    // ActixWeb,
-}
-
-#[derive(Debug)]
-pub enum DatabaseLayer {
-    Sqlx(SQLXFlavour),
-    // Diesel,
-}
-
-
-#[derive(Debug)]
-pub enum PepinoProcess {
-    Create { choices: Choices },
-    Dev { path: Option<String> },
-    Build(BuildProcess),
-}
-
-#[derive(Debug)]
-pub enum BuildProcess {
-    Frontend { release: bool },
-    Backend { target: Option<String> },
-}
-
-#[derive(Debug)]
-pub enum SQLXFlavour {
-    PostgreSQL { docker_compose: bool },
-    SQLite,
 }
 
 pub fn init_cli() -> Result<PepinoProcess, PepinoError> {

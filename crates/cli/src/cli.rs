@@ -1,9 +1,17 @@
-// use super::error::PepinoError;
-
-use orchestra::{errors::PepinoError, models::{PepinoProcess, Choices, BackendFramework, SQLXFlavour, DatabaseLayer, BuildProcess}};
 use clap::{Parser, Subcommand};
 use console::Style;
 use dialoguer::{Confirm, Input, Select, theme::ColorfulTheme};
+use orchestra::{
+    errors::PepinoError,
+    models::{BackendFramework, BuildProcess, Choices, DatabaseLayer, PepinoProcess, SQLXFlavour},
+};
+
+// TODO:
+// pepino new -> new project
+// pepino dev -> orchestrate BE + FE
+// pepino build -> runs build. Both? Or specify?
+// pepino serve -> runs prod build - so with release flag
+// pepino migrate -> run DB migrations
 
 #[derive(Parser, Debug)]
 #[command(name = "pepino")]

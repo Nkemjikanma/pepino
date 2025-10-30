@@ -1,8 +1,16 @@
+#![deny(clippy::unwrap_used)]
+#![deny(clippy::expect_used)]
+#![deny(clippy::panic)]
+#![deny(unused_must_use)]
+
 pub mod utils;
 
-use crate::utils::{templates, files};
-use orchestra::{errors::PepinoError, models::{Choices, DatabaseLayer, SQLXFlavour}};
+use crate::utils::{files, templates};
 use camino::{Utf8Path, Utf8PathBuf};
+use orchestra::{
+    errors::PepinoError,
+    models::{Choices, DatabaseLayer, SQLXFlavour},
+};
 use std::collections::HashMap;
 
 pub enum SQLXTemplates {

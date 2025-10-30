@@ -1,4 +1,8 @@
 # Default recipe - show available commands
+<<<<<<< HEAD
+
+=======
+>>>>>>> main
 default:
 	@just --list
 

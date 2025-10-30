@@ -97,7 +97,6 @@ async fn start_server(config: Config) -> Result<(), Box<dyn std::error::Error>> 
         }
     };
     tracing::info!("Server has started");
-
     axum::serve(listener, app).await?;
 
     Ok(())

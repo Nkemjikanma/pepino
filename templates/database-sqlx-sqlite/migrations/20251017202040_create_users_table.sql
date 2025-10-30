@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP)
 );
 
-INSERT INTO users (email, name)
+INSERT INTO
+    users (email, name)
 VALUES
     ('alice@example.com', 'Alice'),
     ('bob@example.com', 'Bob');
-

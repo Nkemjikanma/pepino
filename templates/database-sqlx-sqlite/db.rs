@@ -1,9 +1,6 @@
 use super::config::DBConfig;
 use sqlx::sqlite::{SqliteConnectOptions, SqlitePool, SqlitePoolOptions};
-<<<<<<< HEAD
 
-=======
->>>>>>> 56bc7a2 (feat: add docker compose to postgres (#7))
 use std::str::FromStr;
 
 #[tracing::instrument(name = "pool", skip_all)]
